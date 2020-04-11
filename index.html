@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>蛋黃哥</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+  <style>
+    * {
+      padding: 0;
+      margin: 0
+    }
+
+    body {
+      margin: 0;
+      height: 100vh;
+
+      overflow: hidden;
+      background: url('../image/background1.png');
+    }
+
+    .main {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      margin: -300px 0 0 -250px;
+      width: 500px;
+      height: 600px;
+      border: 2px solid #d6bc00;
+      border-radius: 5px;
+      box-shadow: 2px 2px 10px rgba(127, 119, 58, 0.5);
+      background: rgba(127, 119, 58, 0.1)
+    }
+
+    .top {
+      color: #eb9504;
+      -webkit-text-stroke: 0.2px white;
+      width: 100%;
+      height: 13%;
+      text-align: center;
+      font-family: 'Fredoka One', cursive;
+    }
+
+    .body {
+      width: 100%;
+      height: 87%;
+    }
+
+    .score {
+      float: left;
+      width: 20%;
+      height: 100%;
+
+    }
+
+    h5 {
+      font-size: 1.5em
+    }
+
+    p {
+      font-size: 2.4em
+    }
+
+    .mes {
+      float: left;
+      width: 60%;
+      height: 100%;
+
+    }
+
+    .message {
+      width: 100%;
+      height: 100%;
+      font-size: 3em;
+      -webkit-text-stroke: 1px white;
+      text-shadow: 2px 2px 2px black;
+    }
+
+    .message:hover {
+      color: #c77100;
+      text-shadow: 2px 4px 2px #e3ddb1;
+    }
+
+    .error {
+      text-align: center
+    }
+
+    .box {
+      width: 160px;
+      height: 166px;
+      float: left;
+      border: 1px solid #eb9504;
+      margin: 2.25px;
+      box-shadow: 2px 2px 1px rgba(127, 119, 58, 0.3);
+      background-size: contain;
+      content: '';
+      overflow: hidden;
+    }
+
+    .inside {
+      position: relative;
+      width: 80%;
+      height: 95%;
+      margin: 2.5% 10%;
+      top: 100%;
+      background-size: contain;
+      transition: all 0.4s;
+
+    }
+
+    .target {
+      animation: showImage 0.2s linear;
+      top: 0;
+    }
+
+
+    /* increase animation for scoreboard */
+    .scoreAnim {
+      animation: animTime 0.2s linear
+    }
+
+
+
+
+    /* increase animation for missed board */
+    .missAnim {
+      animation: animMiss 0.3s linear
+    }
+
+
+    .timerAnim {
+      animation: animScore 0.3s linear
+    }
+  </style>
+</head>
+
+<body>
+
+
+  <div class="main">
+    <div class="top">
+      <div class="score">
+        <h5>Score</h5>
+        <p class='scores'>0</p>
+      </div>
+      <div class="mes">
+
+      </div>
+      <div class="error">
+        <h5>Missed</h5>
+        <p class='errors'>0</p>
+      </div>
+    </div>
+    <div class="body">
+
+    </div>
+  </div>
+  <audio data-key='sword3' src="./audio/start.mp3"></audio>
+  <audio data-key='background' src="./audio/test.mp3"></audio>
+  <script>
+
+    const sword3 = document.querySelector('audio[data-key="sword3"]');
+    const background = document.querySelector('audio[data-key="background"]');
+
+
+    const target = ['egg', 'human', 'chicken'];
+
+    const body = document.querySelector('.body');
+    const mes = document.querySelector('.mes');
+    const err = document.querySelector('.errors');
+    const score = document.querySelector('.scores');
+    let audio = true;
+    let counter = 21;
+    let miss = 0;
+    let hit = 0;
+    let lastBox, randomNum;
+
+
+    window.onload = init
+
+    function init() {
+      for (let x = 0; x < 9; x++) {
+        body.innerHTML += `
+      <div class='box'>
+         <div class='inside'></div>
+      </div>`
+      }
+      mes.innerHTML = `<h5 class='message'>Start</h5>`
+      mes.addEventListener('click', start)
+    }
+
+    // 開始遊戲
+    function start() {
+      mes.removeEventListener('click', start)
+      showImage()
+      timeCounter()
+      counter === 0 ? background.stop() : background.play()
+      sword3.play()
+      for (let x = 0; x < body.childElementCount; x++) {
+        body.children[x].addEventListener('click', evalBox)
+      }
+    }
+
+    // 判斷
+    function evalBox() {
+      // audio = !audio
+      if (this.firstElementChild.classList.contains('egg')) {
+        // sword3.play()
+        score.innerHTML = ++hit
+        const scoreboard = document.querySelector('.scores')
+        scoreboard.classList.add('scoreAnim')
+        removeClass(scoreboard, 'scoreAnim')
+        this.firstElementChild.classList.remove('egg')
+      } else {
+        // audio ? sword1.play() : sword2.play()
+        const errorBoard = document.querySelector('.errors')
+        errorBoard.classList.add('scoreAnim')
+        removeClass(errorBoard, 'scoreAnim')
+        err.innerHTML = ++miss
+      }
+    }
+
+    // 清除class
+    function removeClass(element, classname) {
+      setTimeout(() => {
+        element.classList.remove(classname)
+      }, 300)
+    }
+
+    //顯示圖片
+    function showImage() {
+      const time = randomTime(200, 1000)
+      const samp = randomBox()
+      const randImage = Math.floor(Math.random() * 3)
+      body.children[samp].firstElementChild.classList.add('target')
+      if (randImage == 0) {
+        body.children[samp].firstElementChild.style.background = `url('../image/egg.png') center no-repeat`
+        body.children[samp].firstElementChild.classList.add('egg')
+      }
+      body.children[samp].firstElementChild.style.background = `url('../image/${target[randImage]}.png') center no-repeat`
+
+      //loop
+      setTimeout(() => {
+        body.children[samp].firstElementChild.classList.remove('target', 'egg')
+        if (counter == 0) {
+          clearTimeout()
+        } else {
+          showImage()
+        }
+      }, 1000)
+    }
+
+    // 亂數
+    function randomBox() {
+      const randBox = Math.floor(Math.random() * 9)
+      if (randBox == lastBox) randomBox()
+      lastBox = randBox;
+      return lastBox
+    }
+
+    // random number selector
+    function randomTime(min, max) {
+      return Math.floor(Math.random() * (max - min) + min)
+    }
+
+    // timeCounter
+    function timeCounter() {
+      setTimeout(() => {
+        --counter
+        mes.innerHTML = `
+      <h5>Time left:</h5>
+      <p class='timeCounter'>${counter}</p>
+    `
+        if (counter == 0) {
+          for (let x = 0; x < body.childElementCount; x++) {
+            body.children[x].removeEventListener('click', evalBox)
+          }
+          mes.innerHTML = "<h5 class='message'>Game Over!</h5>";
+          mes.addEventListener('click', reset)
+
+          clearTimeout()
+        } else {
+          timeCounter()
+        }
+      }, 1000)
+    }
+
+    // resets the app back to initial state
+    function reset() {
+      window.location.reload(true)
+    }
+  </script>
+</body>
+
+
+</html>
