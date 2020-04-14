@@ -18,7 +18,7 @@
       height: 100vh;
 
       overflow: hidden;
-      background: url('../image/background1.png');
+      background: url("background1.png");
     }
 
     .main {
@@ -157,8 +157,8 @@
 
     </div>
   </div>
-  <audio data-key='sword3' src="./audio/start.mp3"></audio>
-  <audio data-key='background' src="./audio/test.mp3"></audio>
+  <audio data-key='sword3' src="start.mp3"></audio>
+  <audio data-key='background' src="test.mp3"></audio>
   <script>
 
     const sword3 = document.querySelector('audio[data-key="sword3"]');
@@ -236,10 +236,10 @@
       const randImage = Math.floor(Math.random() * 3)
       body.children[samp].firstElementChild.classList.add('target')
       if (randImage == 0) {
-        body.children[samp].firstElementChild.style.background = `url('../image/egg.png') center no-repeat`
+        body.children[samp].firstElementChild.style.background = `url('egg.png') center no-repeat`
         body.children[samp].firstElementChild.classList.add('egg')
       }
-      body.children[samp].firstElementChild.style.background = `url('../image/${target[randImage]}.png') center no-repeat`
+      body.children[samp].firstElementChild.style.background = `url('${target[randImage]}.png') center no-repeat`
 
       //loop
       setTimeout(() => {
